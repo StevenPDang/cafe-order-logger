@@ -48,40 +48,49 @@
       .jasmine { background: #ffe0b2; color: white; }
       .done { background: #4caf50; color: white; margin-top: 20px; }
 
-      #sequenceDisplay {
+      #sequenceDisplay, #priceDisplay {
         margin-top: 20px;
         font-size: 22px;
         font-weight: bold;
         word-wrap: break-word;
       }
-      #priceDisplay {
-        margin-top: 20px;
-        font-size: 22px;
-        font-weight: bold;
-        word-wrap: break-word;
-      }
+
     </style>
   </head>
   <body>
     <h3>Steven Yo Boss</h3>
+    
 
     <input type="text" id="username" placeholder="Enter your name">
 
-    <button class="btn original" onclick="add('Og ', 3, 7.50)">Original</button>
-    <button class="btn earl" onclick="add('Eg ', 3, 7.50)">Earl</button>
-    <button class="btn ein" onclick="add('Ein ', 4, 8.00)">Einspanner</button>
-    <button class="btn strawberry" onclick="add('Str ', 4, 8.00)">Strawberry</button>
-    <button class="btn jasmine" onclick="add('Jas ', 4, 7.50)">Jasmine</Button>
-    <button class="btn delete" onclick="removeLast()">❌</button>
+    <div id="drinkButtons"></div>
 
     <button class="btn done" onclick="done()">Done</button>
-
     <p id="priceDisplay">Price: </p>
     <p id="sequenceDisplay">Sequence: </p>
-    
+
 
 
     <script>
+      const drinks = [
+        { name: "Original", code: "Og ", length: 3, price: 7.50, class: "original" },
+        { name: "Earl", code: "Eg ", length: 3, price: 7.50, class: "earl" },
+        { name: "Einspanner", code: "Ein ", length: 4, price: 8.00, class: "ein" },
+        { name: "Strawberry", code: "Str ", length: 4, price: 8.00, class: "strawberry" },
+        { name: "Jasmine", code: "Jas ", length: 4, price: 7.50, class: "jasmine" },
+      ];
+
+
+      const container = document.getElementById("drinkButtons")
+      drinks.forEach(drink => {
+        const btn = document.createElement("button")
+        btn.className = `btn ${drink.class}`;
+        btn.innerText = drink.name;
+        btn.onclick = () => add(drink.code, drink.length, drink.price);
+        container.appendChild(btn);
+      });
+      
+
       let sequence = "";
       let historySeq = [];
       let historyPrice = [];
