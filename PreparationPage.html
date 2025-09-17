@@ -1,131 +1,144 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       body {
         font-family: Arial, sans-serif;
-        padding: 10px;
-        background: #f4f4f9;
+        text-align: center;
+        padding: 20px;
+        background: #f5f5f5;
       }
-     .order-block {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin: 10px 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative; /* needed to position spinner */
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* text on left, spinner on right */
-}
 
+      h3 {
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
 
-.complete-btn {
-    margin-left: 10px;
-    padding: 6px 12px;
-    border: none;
-    background: #4285F4;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-}
+      input[type="text"] {
+        width: 100%;
+        padding: 16px;
+        font-size: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        box-sizing: border-box;
+      }
 
-.spin {
-    animation: spin 1s linear infinite;
-    font-size: 24px;
-    color: #4285F4;
-    margin-left: 10px;
-    display: none; /* hide by default */
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.order-block:hover {
-    background: #f5f5f5;
-    transform: translateY(-2px); /* subtle lift on hover */
-}
-
-/* Optional: extra styles specifically for very small screens */
-@media (max-width: 400px) {
-    .order-block {
+      .btn {
+        display: block;
+        width: 100%;
         padding: 18px;
-        font-size: 0.95rem;
-    }
-}
-      .order-header {
+        font-size: 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.1s, background 0.2s;
+      }
+
+      .btn:active {
+        transform: scale(0.97);
+      }
+
+      .original { background: #f0a500; color: white; }
+      .earl { background: #0077b6; color: white; }
+      .ein { background: #6a4c93; color: white; }
+      .strawberry { background: #ff4b5c; color: white; }
+      .jasmine { background: #ffe0b2; color: white; }
+      .done { background: #4caf50; color: white; margin-top: 20px; }
+
+      #sequenceDisplay, #priceDisplay {
+        margin-top: 20px;
+        font-size: 22px;
         font-weight: bold;
-        font-size: 1.2em;
+        word-wrap: break-word;
       }
-      .order-details {
-        font-size: 0.9em;
-        color: #555;
-      }
+
     </style>
-    <script>
-      function markCupDone(row) {
-        google.script.run.withSuccessHandler(loadOrders).markCupDone(row);
-      }
-
-      function loadOrders() {
-        google.script.run.withSuccessHandler(function(orders) {
-          renderOrders(orders);
-        }).getPendingOrders();
-      }
-
-      function renderOrders(orders) {
-        const container = document.getElementById("orders");
-        container.innerHTML = "";
-
-        if (orders.length === 0) {
-            container.innerHTML = "<p>No pending orders</p>";
-            return;
-        }
-
-        orders.forEach(order => {
-            const div = document.createElement("div");
-            div.className = "order-block";
-
-            // Add spinner inside block
-            div.innerHTML = `
-                <div>
-                    <div class="order-header">${order[1]} - ${order[3]}</div>
-                    <div class="order-details">Time: ${order[2]}</div>
-                </div>
-                <i class="material-icons spin">autorenew</i>
-            `;
-
-            div.onclick = () => {
-                const spinner = div.querySelector(".spin");
-                spinner.style.display = "inline-block"; // show spinner
-
-                // Call GAS function
-                google.script.run.withSuccessHandler(() => {
-                    spinner.style.display = "none"; // hide spinner after done
-                    loadOrders(); // refresh orders
-                }).markCupDone(order[0]);
-            };
-
-            container.appendChild(div);
-        });
-      }
-
-      window.onload = () => {
-        loadOrders();               // initial load
-        setInterval(loadOrders, 2000); // refresh every 2 seconds
-      };
-    </script>
   </head>
   <body>
-    <h2>Cup Maker Orders</h2>
-    <div id="orders"></div>
+    <h3>Steven Yo Boss</h3>
+    
+
+    <input type="text" id="username" placeholder="Enter your name">
+
+    <div id="drinkButtons"></div>
+
+    <button class="btn delete" onclick="removeLast()">❌</button>
+    <button class="btn done" onclick="done()">Done</button>
+    <p id="priceDisplay">Price: </p>
+    <p id="sequenceDisplay">Sequence: </p>
+
+
+
+    <script>
+      const drinks = [
+        { name: "Original", code: "Og ", length: 3, price: 7, class: "original" },
+        { name: "Earl", code: "Eg ", length: 3, price: 7.50, class: "earl" },
+        { name: "Einspanner", code: "Ein ", length: 4, price: 8.00, class: "ein" },
+        { name: "Strawberry", code: "Str ", length: 4, price: 8.00, class: "strawberry" },
+        { name: "Jasmine", code: "Jas ", length: 4, price: 7.50, class: "jasmine" },
+      ];
+
+
+      const container = document.getElementById("drinkButtons")
+      drinks.forEach(drink => {
+        const btn = document.createElement("button")
+        btn.className = `btn ${drink.class}`;
+        btn.innerText = drink.name;
+        btn.onclick = () => add(drink.code, drink.length, drink.price);
+        container.appendChild(btn);
+      });
+      
+
+      let sequence = "";
+      let historySeq = [];
+      let historyPrice = [];
+      let priceSum = 0;
+
+      function add(value, length, price) {
+        sequence += value;
+        historySeq.push(length);
+        historyPrice.push(price);
+        priceSum += price;
+        document.getElementById("sequenceDisplay").innerText = "Sequence: " + sequence;
+        document.getElementById("priceDisplay").innerText = "Price: " + priceSum;
+      }
+
+      
+
+      function removeLast(){
+        if (historySeq.length > 0){
+          const lastLength = historySeq.pop();
+          const lastPrice = historyPrice.pop();
+          sequence = sequence.slice(0,-lastLength);
+          priceSum -= lastPrice;
+          document.getElementById("sequenceDisplay").innerText = "Sequence: " + sequence;
+          document.getElementById("priceDisplay").innerText = "Price: " + priceSum; 
+        }
+      }
+
+      function done() {
+        history = [];
+        const name = document.getElementById("username").value || "Unknown";
+        
+        if (!sequence) {
+          alert("No sequence entered!");
+          return;
+        }
+
+        google.script.run.withSuccessHandler(() => {
+          alert("Logged");
+        }).completeRow(name, sequence, priceSum);
+
+        name = '';
+        sequence = "";
+        priceSum = 0;
+
+        document.getElementById("priceDisplay").innerText = "Price: "
+        document.getElementById("sequenceDisplay").innerText = "Sequence: ";
+      }
+    </script>
   </body>
 </html>
